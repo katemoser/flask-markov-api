@@ -1,15 +1,16 @@
 from flask import Flask
 
-from models import connect_db
+from models import db, connect_db
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask-markov'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask_markov'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "oh-so-secret"
 app.config['SQLALCHEMY_ECHO'] = True
 
 connect_db(app)
+
 
 @app.get('/')
 def homepage():
