@@ -15,16 +15,40 @@ connect_db(app)
 
 @app.get('/')
 def homepage():
-    """returns a basic greeting"""
+    """Returns a basic greeting."""
 
     return "HELLO WORLD"
 
 
 @app.get('/users')
 def list_users():
-    """returns all users in system
+    """returns all info on all users in system
     
-    returns JSON like:"""
+    returns JSON like: {users: [user, ...] }
+    with user like: {
+            "first_name": "Kate",
+			"id": 1,
+			"last_name": "Moser",
+			"liked_poems": [poem, ...],
+            "submitted_poems": [poem, ...]
+            "submitted_seeds": [ seed, ...] }
+        with seed like:
+        {
+            "author": "Kate",
+			"id": 123,
+			"poems_seeded": [ poem, ...],
+			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+			"submitted_by_user_id": 1,
+			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+			"title": "New Seed"
+        } 
+        and poem like: {
+            "id": 1,
+			"seed_id": 1,
+			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+			"submitted_by_user_id": 1,
+			"text": "This is the poem text."
+        } """
 
     users = [user.serialize() for user in User.query.all()]
 
@@ -33,18 +57,45 @@ def list_users():
 
 @app.get('/users/<int:user_id>')
 def get_user(user_id):
-    """returns data on one user"""
+    """Returns data on one user like:
+    {
+        "first_name": "Kate",
+        "id": 1,
+        "last_name": "Moser",
+        "liked_poems": [poem, ...],
+        "submitted_poems": [poem, ...]
+        "submitted_seeds": [ seed, ...] 
+    } """
 
     user = User.query.get_or_404(user_id)
 
-    return jsonify(user=user.serialize())
+    return jsonify(user.serialize())
 
 
 @app.get('/seeds')
 def list_seeds():
-    """returns all users in system
+    """Returns all seeds in system.
     
-    returns JSON like:"""
+    returns JSON like: 
+    { seeds: [seed, ... ] }
+
+    with seed like:
+        {
+            "author": "Kate",
+			"id": 123,
+			"poems_seeded": [ poem, ...],
+			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+			"submitted_by_user_id": 1,
+			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+			"title": "New Seed"
+        } 
+    and poem like: {
+            "id": 1,
+			"seed_id": 1,
+			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+			"submitted_by_user_id": 1,
+			"text": "This is the poem text."
+        } """
 
     seeds = [seed.serialize() for seed in Seed.query.all()]
 
@@ -53,6 +104,16 @@ def list_seeds():
 
 @app.post('/seeds')
 def create_seed():
+    """Creates seed. returns JSON like:
+        {seed: {
+            "author": "Kate",
+			"id": 123,
+			"poems_seeded": [ poem, ...],
+			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+			"submitted_by_user_id": 1,
+			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+			"title": "New Seed" } 
+        } """
     data = request.json
     print(data)
 
@@ -71,7 +132,16 @@ def create_seed():
 
 @app.get('/seeds/<int:seed_id>')
 def get_seed(seed_id):
-    """returns data on one seed"""
+    """Returns data on one seed like:
+    
+    {seed: {
+            "author": "Kate",
+			"id": 123,
+			"poems_seeded": [ poem, ...],
+			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+			"submitted_by_user_id": 1,
+			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+			"title": "New Seed" } """
 
     seed = Seed.query.get_or_404(seed_id)
 
@@ -80,7 +150,9 @@ def get_seed(seed_id):
 
 @app.get('/seeds/<int:seed_id>/generate')
 def generate_poem(seed_id):
-    """returns string of poem generated with seed_id"""
+    """Returns string of poem generated with seed_id like:
+    
+    "This is the new generated poem" """
 
     seed = Seed.query.get_or_404(seed_id)
     text_generator = MarkovMachine(seed.text)
@@ -90,9 +162,17 @@ def generate_poem(seed_id):
 
 @app.get('/poems')
 def list_poems():
-    """returns all users in system
+    """Returns all Poems in system
     
-    returns JSON like:"""
+    returns JSON like: 
+    {poems: [poem, ...] }
+    with poem like: {
+            "id": 1,
+		    "seed_id": 1,
+			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+			"submitted_by_user_id": 1,
+			"text": "This is the poem text."
+        } """
 
     poems = [poem.serialize() for poem in Poem.query.all()]
 
@@ -101,6 +181,14 @@ def list_poems():
 
 @app.post('/poems')
 def create_poem():
+    """ Creates new Poem. Retruns JSON like: 
+    {poem: {
+            "id": 1,
+		    "seed_id": 1,
+			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+			"submitted_by_user_id": 1,
+			"text": "This is the poem text."
+        } } """
     data = request.json
 
     poem = Poem(
@@ -117,7 +205,14 @@ def create_poem():
 
 @app.get('/poems/<int:poem_id>')
 def get_poem(poem_id):
-    """returns data on one poem"""
+    """returns JSON data on one poem like:
+    {poem: {
+            "id": 1,
+		    "seed_id": 1,
+			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+			"submitted_by_user_id": 1,
+			"text": "This is the poem text."
+        } } """
 
     poem = Poem.query.get_or_404(poem_id)
 
