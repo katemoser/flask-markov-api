@@ -27,9 +27,36 @@ class User(db.Model):
     )
 
     last_name = db.Column(
-        db.Text, 
+        db.Text,
         nullable=False
     )
+
+    liked_poems = db.relationship(
+        "Poem",
+        secondary="likes",
+        backref="liked_by_users"
+    )
+
+    submitted_poems = db.relationship(
+        "Poem",
+    )
+
+    submitted_seeds = db.relationship(
+        "Seed",
+    )
+    
+    def serialize(self):
+        """serialize user info"""
+
+        return {
+            "id": self.id,
+            "username": self.username,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "submitted_seeds": [seed.serialize() for seed in self.submitted_seeds],
+            "submitted_poems": [poem.serialize() for poem in self.submitted_poems],
+            "liked_poems": [poem.serialize() for poem in self.liked_poems],
+        }
 
 
 class Seed(db.Model):
@@ -40,6 +67,11 @@ class Seed(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
+    )
+
+    title = db.Column(
+        db.Text,
+        nullable=False,
     )
 
     text = db.Column(
@@ -63,6 +95,23 @@ class Seed(db.Model):
         default=datetime.datetime.now
     )
 
+    poems_seeded = db.relationship(
+        "Poem"
+    )
+
+    def serialize(self):
+        """serialize user info"""
+
+        return {
+            "id": self.id,
+            "title": self.title,
+            "text": self.text,
+            "author": self.author,
+            "submitted_by_user_id": self.submitted_by_user_id,
+            "submitted_at": self.submitted_at,
+            "poems_seeded": [poem.serialize() for poem in self.poems_seeded]
+        }
+
 
 class Poem(db.Model):
     """Machine generated poem class for Markov API"""
@@ -79,6 +128,11 @@ class Poem(db.Model):
         db.ForeignKey('seeds.id')
     )
 
+    text = db.Column(
+        db.Text,
+        nullable=False
+    )
+
     submitted_by_user_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id')
@@ -90,6 +144,17 @@ class Poem(db.Model):
         default=datetime.datetime.now
     )
 
+    def serialize(self):
+        """serialize user info"""
+
+        return {
+            "id": self.id,
+            "seed_id": self.seed_id,
+            "text": self.text,
+            "submitted_by_user_id": self.submitted_by_user_id,
+            "submitted_at": self.submitted_at,
+        }
+    
 
 class Like(db.Model):
     """Like on poem from user"""
