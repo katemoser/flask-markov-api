@@ -194,7 +194,6 @@ def create_poem():
     data = request.json
 
     poem = Poem(
-        id=data['id'],
         seed_id= data['seed_id'],
         text=data['text'],
         submitted_by_user_id=1
