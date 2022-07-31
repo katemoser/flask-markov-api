@@ -14,6 +14,7 @@ class User(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
+        autoincrement=True,
     )
 
     username = db.Column(
@@ -67,6 +68,8 @@ class Seed(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
+        autoincrement=True,
+
     )
 
     title = db.Column(
@@ -121,6 +124,8 @@ class Poem(db.Model):
     id = db.Column(
         db.Integer,
         primary_key=True,
+        autoincrement=True,
+
     )
 
     seed_id = db.Column(
@@ -164,13 +169,16 @@ class Like(db.Model):
     user_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id'),
-        primary_key=True
+        primary_key=True,
+
     )
 
     poem_id = db.Column(
         db.Integer,
         db.ForeignKey('poems.id'),
-        primary_key=True
+        primary_key=True,
+        autoincrement=True,
+
     )
 
 

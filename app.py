@@ -1,9 +1,11 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
 
 from models import db, connect_db, User, Seed, Poem
 from Markov import MarkovMachine
 
 app = Flask(__name__)
+CORS(app, resources={r'/*': {"origins": "*"}})
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask_markov'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -103,6 +105,7 @@ def list_seeds():
 
 
 @app.post('/seeds')
+@cross_origin()
 def create_seed():
     """Creates seed. returns JSON like:
         {seed: {
@@ -118,7 +121,6 @@ def create_seed():
     print(data)
 
     seed = Seed(
-        id=data['id'],
         title=data['title'],
         text=data['text'],
         author=data['author'],
@@ -179,7 +181,7 @@ def list_poems():
     return jsonify(poems=poems)
 
 
-@app.post('/poems')
+@app.route('/poems', methods=["POST"])
 def create_poem():
     """ Creates new Poem. Retruns JSON like: 
     {poem: {

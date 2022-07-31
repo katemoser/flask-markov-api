@@ -7,17 +7,19 @@ db.drop_all()
 db.create_all()
 
 admin = User(
-    id=1,
     username="kate",
     first_name="Kate",
     last_name="Moser"
 )
 
+
 db.session.add(admin)
 db.session.commit()
 
+new_user = User.query.all()[0]
+user_id = new_user.id
+
 seed = Seed(
-    id=1,
     title="seed title",
     text="""One of my wishes is that those dark trees, 
 So old and firm they scarcely show the breeze, 
@@ -99,25 +101,33 @@ The which it is reserved for God above
 To sanctify to what far ends He will, 
 But which it only needs that we fulfill.""",
     author="anonymous",
-    submitted_by_user_id=1,
+    submitted_by_user_id=user_id,
 )
+
 
 db.session.add(seed)
 db.session.commit()
 
+new_seed = Seed.query.all()[0]
+seed_id = new_seed.id
+
 poem = Poem(
-    id=1,
-    seed_id=1,
+    seed_id=seed_id,
     text="This is the poem text.",
-    submitted_by_user_id=1
+    submitted_by_user_id=user_id
 )
 
 db.session.add(poem)
 db.session.commit()
 
+new_poem = Poem.query.all()[0]
+poem_id = new_poem.id
+
+print("**************************** poem_id:", poem_id)
+
 like = Like(
-    user_id=1,
-    poem_id=1,
+    user_id=user_id,
+    poem_id=poem_id,
 )
 
 db.session.add(like)
