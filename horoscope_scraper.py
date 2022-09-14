@@ -133,7 +133,7 @@ class HoroScraper:
         input = " @ ".join(self.signs[sign].daily)
         mm = MarkovMachine(input)
 
-        print(mm.get_text())
+        return mm.get_text()
 
 
     def _populate(self):

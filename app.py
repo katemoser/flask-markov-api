@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from horoscope_scraper import Horoscope
 
 from models import db, connect_db, User, Seed, Poem
 from Markov import MarkovMachine
+from horoscope_scraper import HoroScraper
 
 app = Flask(__name__)
 CORS(app)
@@ -217,3 +219,23 @@ def get_poem(poem_id):
     poem = Poem.query.get_or_404(poem_id)
 
     return jsonify(poem=poem.serialize())
+
+
+
+###### HOROSCOPE ROUTES ##################################
+
+@app.get('/horoscopes/daily/<sign>')
+def get_daily_horoscope(sign):
+    """ Returns JSON like:
+    {horoscope: {
+        "sign" : "pisces",
+        "text" : "This is a generated horoscope"
+    }}
+    """
+    scraper = HoroScraper()
+    horoscope = scraper.generate_daily(sign)
+
+    return jsonify(horoscope = {
+        "text": horoscope,
+        "sign": sign
+    })
