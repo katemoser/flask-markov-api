@@ -2,6 +2,9 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import date
 
+from Markov import MarkovMachine
+
+
 # Commented out after refactoring 
 # -- will delete later, after i make sure it didn't break
 # 
@@ -113,9 +116,25 @@ class HoroScraper:
                 "base": "https://chaninicholas.com/",
                 "daily": "-free-daily-horoscope-",
             },
+            "ganeshaspeaks.com": {
+                "base" : "https://www.ganeshaspeaks.com/horoscopes/",
+                "daily" : "daily-horoscope/",
+            },
+            "mpanchang.com": {
+                "base" : "https://www.mpanchang.com/horoscope/",
+                "daily" : "daily-horoscope/",
+            }
         }
 
         self._populate()
+
+    def generate_daily(self, sign):
+        """using the markov machine to generate a horoscope"""
+        input = " @ ".join(self.signs[sign].daily)
+        mm = MarkovMachine(input)
+
+        print(mm.get_text())
+
 
     def _populate(self):
         """populates daily, weekly, monthly, yearly for each sign"""
@@ -149,10 +168,36 @@ class HoroScraper:
         # get from chaninicolas.com
         site = self.websites["chaninicolas.com"]
         today = f'{self.date["month"]}-{self.date["day"]}-{self.date["year"]}'
-        page = requests.get(f'{site["base"]}{sign}{site["daily"]}{today}')
+        page = requests.get(f'{site["base"]}{sign}{site["daily"]}{today}/')
 
         soup = BeautifulSoup(page.content, "html.parser")
-        result = soup.find(class_="entry-content").find_all("p")[1].text
+        try:
+            result = soup.find(class_="entry-content").find_all("p")[1].text
+            horoscope = result.strip()
+            self.signs[sign].daily.append(horoscope)
+        except(AttributeError):
+            pass
+
+        # get from ganeshaspeaks.com
+        site = self.websites["ganeshaspeaks.com"]
+        page = requests.get(f'{site["base"]}{site["daily"]}{sign}/')
+
+        soup = BeautifulSoup(page.content, "html.parser")
+        result = soup.find(id="horo_content").text
+        horoscope = result.strip()
+        self.signs[sign].daily.append(horoscope)
+
+        # astroyogi.com
+        site = self.websites["mpanchang.com"]
+        print(f'{site["base"]}{site["daily"]}{sign}-daily-horoscope/')
+        page = requests.get(f'{site["base"]}{site["daily"]}{sign}-daily-horoscope/')
+
+        soup = BeautifulSoup(page.content, "html.parser")
+        result = (soup
+            .find("h2", string=lambda text: "daily horoscope" in text.lower())
+            .find_next_sibling()
+            .text
+        )
         horoscope = result.strip()
         self.signs[sign].daily.append(horoscope)
 
