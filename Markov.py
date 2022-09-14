@@ -44,6 +44,6 @@ class MarkovMachine:
         while current_word is not None:
             output.append(current_word)
             # TODO: Change this random stuff to random.choice()
-            randomIndex = random.randint(0, len(self.chains[current_word])-1)
-            current_word = self.chains[current_word][randomIndex]
+            # randomIndex = random.randint(0, len(self.chains[current_word])-1)
+            current_word = random.choice (self.chains[current_word])
         return ' '.join(output)
