@@ -1,13 +1,16 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from horoscope_scraper import Horoscope
 
 from models import db, connect_db, User, Seed, Poem
 from Markov import MarkovMachine
+
+from poems.routes import poems
 from horoscope_scraper import HoroScraper
 
 app = Flask(__name__)
 CORS(app)
+
+app.register_blueprint(poems)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask_markov'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -162,47 +165,47 @@ def generate_poem(seed_id):
 
     return text_generator.get_text()
 
-
-@app.get('/poems')
-def list_poems():
-    """Returns all Poems in system
+# COMMENTING OUT FOR NOW WHILE IMPLEMENTING BLUEPRINT
+# @app.get('/poems')
+# def list_poems():
+#     """Returns all Poems in system
     
-    returns JSON like: 
-    {poems: [poem, ...] }
-    with poem like: {
-            "id": 1,
-		    "seed_id": 1,
-			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This is the poem text."
-        } """
+#     returns JSON like: 
+#     {poems: [poem, ...] }
+#     with poem like: {
+#             "id": 1,
+# 		    "seed_id": 1,
+# 			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+# 			"submitted_by_user_id": 1,
+# 			"text": "This is the poem text."
+#         } """
 
-    poems = [poem.serialize() for poem in Poem.query.all()]
+#     poems = [poem.serialize() for poem in Poem.query.all()]
 
-    return jsonify(poems=poems)
+#     return jsonify(poems=poems)
 
 
-@app.route('/poems', methods=["POST"])
-def create_poem():
-    """ Creates new Poem. Retruns JSON like: 
-    {poem: {
-            "id": 1,
-		    "seed_id": 1,
-			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This is the poem text."
-        } } """
-    data = request.json
+# @app.route('/poems', methods=["POST"])
+# def create_poem():
+#     """ Creates new Poem. Retruns JSON like: 
+#     {poem: {
+#             "id": 1,
+# 		    "seed_id": 1,
+# 			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+# 			"submitted_by_user_id": 1,
+# 			"text": "This is the poem text."
+#         } } """
+#     data = request.json
 
-    poem = Poem(
-        seed_id= data['seed_id'],
-        text=data['text'],
-        submitted_by_user_id=1
-    )
-    db.session.add(poem)
-    db.session.commit()
+#     poem = Poem(
+#         seed_id= data['seed_id'],
+#         text=data['text'],
+#         submitted_by_user_id=1
+#     )
+#     db.session.add(poem)
+#     db.session.commit()
 
-    return jsonify(poem=poem.serialize())
+#     return jsonify(poem=poem.serialize())
 
 
 @app.get('/poems/<int:poem_id>')

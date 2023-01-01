@@ -166,17 +166,17 @@ class HoroScraper:
         self.signs[sign].daily.append(horoscope)
 
         # get from chaninicolas.com
-        site = self.websites["chaninicolas.com"]
-        today = f'{self.date["month"]}-{self.date["day"]}-{self.date["year"]}'
-        page = requests.get(f'{site["base"]}{sign}{site["daily"]}{today}/')
+        # site = self.websites["chaninicolas.com"]
+        # today = f'{self.date["month"]}-{self.date["day"]}-{self.date["year"]}'
+        # page = requests.get(f'{site["base"]}{sign}{site["daily"]}{today}/')
 
-        soup = BeautifulSoup(page.content, "html.parser")
-        try:
-            result = soup.find(class_="entry-content").find_all("p")[1].text
-            horoscope = result.strip()
-            self.signs[sign].daily.append(horoscope)
-        except(AttributeError):
-            pass
+        # soup = BeautifulSoup(page.content, "html.parser")
+        # try:
+        #     result = soup.find(class_="entry-content").find_all("p")[1].text
+        #     horoscope = result.strip()
+        #     self.signs[sign].daily.append(horoscope)
+        # except(AttributeError):
+        #     pass
 
         # get from ganeshaspeaks.com
         site = self.websites["ganeshaspeaks.com"]
