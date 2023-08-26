@@ -5,9 +5,9 @@ from datetime import date
 from Markov import MarkovMachine
 
 
-# Commented out after refactoring 
+# Commented out after refactoring
 # -- will delete later, after i make sure it didn't break
-# 
+#
 # today = date.today()
 # MONTH = today.strftime("%B")
 # DAY = today.strftime("%d")
@@ -89,7 +89,7 @@ class HoroScraper:
         }
 
         self.signs = {
-            "aries": Horoscope(1),
+            # "aries": Horoscope(1),
             "taurus": Horoscope(2),
             "gemini": Horoscope(3),
             "cancer": Horoscope(4),
@@ -179,13 +179,13 @@ class HoroScraper:
         #     pass
 
         # get from ganeshaspeaks.com
-        site = self.websites["ganeshaspeaks.com"]
-        page = requests.get(f'{site["base"]}{site["daily"]}{sign}/')
+        # site = self.websites["ganeshaspeaks.com"]
+        # page = requests.get(f'{site["base"]}{site["daily"]}{sign}/')
 
-        soup = BeautifulSoup(page.content, "html.parser")
-        result = soup.find(id="horo_content").text
-        horoscope = result.strip()
-        self.signs[sign].daily.append(horoscope)
+        # soup = BeautifulSoup(page.content, "html.parser")
+        # result = soup.find(id="horo_content").text
+        # horoscope = result.strip()
+        # self.signs[sign].daily.append(horoscope)
 
         # astroyogi.com
         site = self.websites["mpanchang.com"]
@@ -214,8 +214,8 @@ class Horoscope:
 
     def __repr__(self):
         return f'Daily for {self.number}: {self.daily}'
-        
-        
+
+
 
 
 

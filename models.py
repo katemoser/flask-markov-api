@@ -23,7 +23,7 @@ class User(db.Model):
     )
 
     first_name = db.Column(
-        db.Text, 
+        db.Text,
         nullable=False
     )
 
@@ -45,7 +45,7 @@ class User(db.Model):
     submitted_seeds = db.relationship(
         "Seed",
     )
-    
+
     def serialize(self):
         """serialize user info"""
 
@@ -159,7 +159,63 @@ class Poem(db.Model):
             "submitted_by_user_id": self.submitted_by_user_id,
             "submitted_at": self.submitted_at,
         }
-    
+
+
+    ################ HOROSCOPE! #############
+
+class HoroscopeSeed(db.Model):
+
+    __tablename__ = "horoscope_seeds"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True,
+    )
+
+    type = db.Column(
+        db.String,
+        nullable = False
+    )
+
+    sign_name = db.Column(
+        db.String,
+        db.ForeignKey("signs.name"),
+        nullable= False
+    )
+
+    text = db.Column(
+        db.Text,
+        nullable = False
+    )
+
+    source = db.Column(
+        db.String,
+        nullable = False
+    )
+
+    date = db.Column(
+        db.Date,
+        nullable = False,
+        default = datetime.datetime.utcnow
+    )
+
+
+class Sign(db.Model):
+    """An astrological sign"""
+
+    __tablename__ = "signs"
+
+    name = db.Column(
+        db.String,
+        primary_key= True
+    )
+
+    horoscopes = db.relationship(
+        'HoroscopeSeed',
+        backref='sign',
+        cascade='all, delete'
+    )
 
 class Like(db.Model):
     """Like on poem from user"""
@@ -180,6 +236,8 @@ class Like(db.Model):
         autoincrement=True,
 
     )
+
+
 
 
 def connect_db(app):
