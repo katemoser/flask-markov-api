@@ -1,6 +1,6 @@
 from horoscope_scraper import HoroScraper
 from app import db
-from models import HoroscopeSeed, Sign
+from models import HoroscopeSeed
 
 def scrape_and_insert_daily_horoscopes():
     scraper = HoroScraper()

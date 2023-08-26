@@ -160,8 +160,8 @@ class Poem(db.Model):
             "submitted_at": self.submitted_at,
         }
 
-
     ################ HOROSCOPE! #############
+
 
 class HoroscopeSeed(db.Model):
 
@@ -175,30 +175,53 @@ class HoroscopeSeed(db.Model):
 
     type = db.Column(
         db.String,
-        nullable = False
+        nullable=False
     )
 
     sign_name = db.Column(
         db.String,
         db.ForeignKey("signs.name"),
-        nullable= False
+        nullable=False
     )
 
     text = db.Column(
         db.Text,
-        nullable = False
+        nullable=False
     )
 
     source = db.Column(
         db.String,
-        nullable = False
+        nullable=False
     )
 
     date = db.Column(
         db.Date,
-        nullable = False,
-        default = datetime.datetime.utcnow
+        nullable=False,
+        default=datetime.datetime.utcnow().date()
     )
+
+    @classmethod
+    def get_todays_seeds(cls, sign):
+        """"Takes an astrological sign and returns all daily seeds from today"""
+
+        today = datetime.datetime.utcnow().date()
+        print("TODAY", today)
+        todays_seeds = cls.query.filter(
+            cls.sign_name == sign
+        ).filter(cls.date == today).all()
+
+        serialized = [s.serialize() for s in todays_seeds]
+
+        return serialized
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "sign": self.sign_name,
+            "text": self.text,
+            "date": self.date,
+            "type": self.type
+        }
 
 
 class Sign(db.Model):
@@ -208,7 +231,7 @@ class Sign(db.Model):
 
     name = db.Column(
         db.String,
-        primary_key= True
+        primary_key=True
     )
 
     horoscopes = db.relationship(
@@ -216,6 +239,7 @@ class Sign(db.Model):
         backref='sign',
         cascade='all, delete'
     )
+
 
 class Like(db.Model):
     """Like on poem from user"""
@@ -236,8 +260,6 @@ class Like(db.Model):
         autoincrement=True,
 
     )
-
-
 
 
 def connect_db(app):
