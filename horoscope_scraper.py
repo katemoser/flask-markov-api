@@ -89,7 +89,7 @@ class HoroScraper:
         }
 
         self.signs = {
-            # "aries": Horoscope(1),
+            "aries": Horoscope(1),
             "taurus": Horoscope(2),
             "gemini": Horoscope(3),
             "cancer": Horoscope(4),

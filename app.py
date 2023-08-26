@@ -3,7 +3,7 @@ from flask_cors import CORS
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-from models import db, connect_db, User, Seed, Poem
+from models import db, connect_db, User, Seed, Poem, HoroscopeSeed
 from Markov import MarkovMachine
 
 from poems.routes import poems
@@ -25,7 +25,7 @@ admin.add_view(ModelView(Poem,db.session))
 
 connect_db(app)
 
-    
+
 
 @app.get('/')
 def homepage():
@@ -37,7 +37,7 @@ def homepage():
 @app.get('/users')
 def list_users():
     """returns all info on all users in system
-    
+
     returns JSON like: {users: [user, ...] }
     with user like: {
             "first_name": "Kate",
@@ -55,7 +55,7 @@ def list_users():
 			"submitted_by_user_id": 1,
 			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
 			"title": "New Seed"
-        } 
+        }
         and poem like: {
             "id": 1,
 			"seed_id": 1,
@@ -78,7 +78,7 @@ def get_user(user_id):
         "last_name": "Moser",
         "liked_poems": [poem, ...],
         "submitted_poems": [poem, ...]
-        "submitted_seeds": [ seed, ...] 
+        "submitted_seeds": [ seed, ...]
     } """
 
     user = User.query.get_or_404(user_id)
@@ -89,8 +89,8 @@ def get_user(user_id):
 @app.get('/seeds')
 def list_seeds():
     """Returns all seeds in system.
-    
-    returns JSON like: 
+
+    returns JSON like:
     { seeds: [seed, ... ] }
 
     with seed like:
@@ -102,7 +102,7 @@ def list_seeds():
 			"submitted_by_user_id": 1,
 			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
 			"title": "New Seed"
-        } 
+        }
     and poem like: {
             "id": 1,
 			"seed_id": 1,
@@ -126,7 +126,7 @@ def create_seed():
 			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
 			"submitted_by_user_id": 1,
 			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
-			"title": "New Seed" } 
+			"title": "New Seed" }
         } """
     data = request.json
     print(data)
@@ -146,7 +146,7 @@ def create_seed():
 @app.get('/seeds/<int:seed_id>')
 def get_seed(seed_id):
     """Returns data on one seed like:
-    
+
     {seed: {
             "author": "Kate",
 			"id": 123,
@@ -164,7 +164,7 @@ def get_seed(seed_id):
 @app.get('/seeds/<int:seed_id>/generate')
 def generate_poem(seed_id):
     """Returns string of poem generated with seed_id like:
-    
+
     "This is the new generated poem" """
 
     seed = Seed.query.get_or_404(seed_id)
@@ -176,8 +176,8 @@ def generate_poem(seed_id):
 # @app.get('/poems')
 # def list_poems():
 #     """Returns all Poems in system
-    
-#     returns JSON like: 
+
+#     returns JSON like:
 #     {poems: [poem, ...] }
 #     with poem like: {
 #             "id": 1,
@@ -194,7 +194,7 @@ def generate_poem(seed_id):
 
 # @app.route('/poems', methods=["POST"])
 # def create_poem():
-#     """ Creates new Poem. Retruns JSON like: 
+#     """ Creates new Poem. Retruns JSON like:
 #     {poem: {
 #             "id": 1,
 # 		    "seed_id": 1,
@@ -242,10 +242,16 @@ def get_daily_horoscope(sign):
         "text" : "This is a generated horoscope"
     }}
     """
-    scraper = HoroScraper()
-    horoscope = scraper.generate_daily(sign)
 
-    return jsonify(horoscope = {
-        "text": horoscope,
-        "sign": sign
-    })
+    seeds = HoroscopeSeed.get_todays_seeds(sign)
+
+    seed_texts = [seed["text"] for seed in seeds]
+
+    # add delimiter character, make machine
+    input = " @ ".join(seed_texts)
+    mm = MarkovMachine(input)
+
+    generated_horoscope = mm.get_text()
+
+
+    return jsonify(sign=sign, text=generated_horoscope)
