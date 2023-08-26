@@ -242,14 +242,16 @@ def get_daily_horoscope(sign):
         "text" : "This is a generated horoscope"
     }}
     """
-    # scraper = HoroScraper()
-    # horoscope = scraper.generate_daily(sign)
-
-    # return jsonify(horoscope = {
-    #     "text": horoscope,
-    #     "sign": sign
-    # })
 
     seeds = HoroscopeSeed.get_todays_seeds(sign)
 
-    return jsonify(seeds)
+    seed_texts = [seed["text"] for seed in seeds]
+
+    # add delimiter character, make machine
+    input = " @ ".join(seed_texts)
+    mm = MarkovMachine(input)
+
+    generated_horoscope = mm.get_text()
+
+
+    return jsonify(sign=sign, text=generated_horoscope)
