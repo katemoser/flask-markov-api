@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+import os
 
 from models import db, connect_db, User, Seed, Poem, HoroscopeSeed
 from Markov import MarkovMachine
@@ -14,9 +15,9 @@ CORS(app)
 
 app.register_blueprint(poems)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///flask_markov'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = "oh-so-secret"
+app.config['SECRET_KEY'] = os.environ['SECRET-KEY']
 app.config['SQLALCHEMY_ECHO'] = True
 
 # Setup admin page
