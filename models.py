@@ -165,7 +165,7 @@ class Poem(db.Model):
 
 class HoroscopeSeed(db.Model):
 
-    __tablename__ = "horoscope_seed"
+    __tablename__ = "horoscope_seeds"
 
     id = db.Column(
         db.Integer,
@@ -178,7 +178,7 @@ class HoroscopeSeed(db.Model):
         nullable = False
     )
 
-    sign = db.Column(
+    sign_name = db.Column(
         db.String,
         db.ForeignKey("signs.name"),
         nullable= False
@@ -197,8 +197,9 @@ class HoroscopeSeed(db.Model):
     date = db.Column(
         db.Date,
         nullable = False,
-        default = datetime.date
+        default = datetime.datetime.utcnow
     )
+
 
 class Sign(db.Model):
     """An astrological sign"""
@@ -208,6 +209,12 @@ class Sign(db.Model):
     name = db.Column(
         db.String,
         primary_key= True
+    )
+
+    horoscopes = db.relationship(
+        'HoroscopeSeed',
+        backref='sign',
+        cascade='all, delete'
     )
 
 class Like(db.Model):

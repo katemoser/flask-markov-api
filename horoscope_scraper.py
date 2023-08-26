@@ -5,9 +5,9 @@ from datetime import date
 from Markov import MarkovMachine
 
 
-# Commented out after refactoring 
+# Commented out after refactoring
 # -- will delete later, after i make sure it didn't break
-# 
+#
 # today = date.today()
 # MONTH = today.strftime("%B")
 # DAY = today.strftime("%d")
@@ -89,7 +89,7 @@ class HoroScraper:
         }
 
         self.signs = {
-            "aries": Horoscope(1),
+            # "aries": Horoscope(1),
             "taurus": Horoscope(2),
             "gemini": Horoscope(3),
             "cancer": Horoscope(4),
@@ -214,8 +214,8 @@ class Horoscope:
 
     def __repr__(self):
         return f'Daily for {self.number}: {self.daily}'
-        
-        
+
+
 
 
 

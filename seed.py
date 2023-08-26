@@ -1,7 +1,7 @@
 """Seed database for Markov"""
 
 from app import db
-from models import User, Seed, Like, Poem
+from models import User, Seed, Like, Poem, Sign
 
 db.drop_all()
 db.create_all()
@@ -19,6 +19,7 @@ db.session.commit()
 new_user = User.query.all()[0]
 user_id = new_user.id
 
+###################### POEM SEED #################
 seed = Seed(
     title="The Love Song of J. Alfred Prufrock",
     text="""Let us go then, you and I,
@@ -203,3 +204,32 @@ like = Like(
 
 db.session.add(like)
 db.session.commit()
+
+
+
+#########################HOROSCOPE SEED ###########
+
+# add signs
+
+astro_signs = [
+    "aries",
+    "taurus",
+    "gemini",
+    "cancer",
+    "leo",
+    "virgo",
+    "libra",
+    "scorpio",
+    "sagittarius",
+    "capricorn",
+    "aquarius",
+    "pisces"
+]
+
+for s in astro_signs:
+    sign = Sign(
+        name = s
+    )
+
+    db.session.add(sign)
+    db.session.commit()
