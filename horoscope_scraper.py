@@ -179,13 +179,13 @@ class HoroScraper:
         #     pass
 
         # get from ganeshaspeaks.com
-        site = self.websites["ganeshaspeaks.com"]
-        page = requests.get(f'{site["base"]}{site["daily"]}{sign}/')
+        # site = self.websites["ganeshaspeaks.com"]
+        # page = requests.get(f'{site["base"]}{site["daily"]}{sign}/')
 
-        soup = BeautifulSoup(page.content, "html.parser")
-        result = soup.find(id="horo_content").text
-        horoscope = result.strip()
-        self.signs[sign].daily.append(horoscope)
+        # soup = BeautifulSoup(page.content, "html.parser")
+        # result = soup.find(id="horo_content").text
+        # horoscope = result.strip()
+        # self.signs[sign].daily.append(horoscope)
 
         # astroyogi.com
         site = self.websites["mpanchang.com"]

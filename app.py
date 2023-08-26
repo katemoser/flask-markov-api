@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 
 from models import db, connect_db, User, Seed, Poem
 from Markov import MarkovMachine
@@ -17,8 +19,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "oh-so-secret"
 app.config['SQLALCHEMY_ECHO'] = True
 
+# Setup admin page
+admin = Admin(app)
+admin.add_view(ModelView(Poem,db.session))
+
 connect_db(app)
 
+    
 
 @app.get('/')
 def homepage():
