@@ -11,6 +11,7 @@ from Markov import MarkovMachine
 
 from poems.routes import poems
 from horoscope_scraper import HoroScraper
+from horoscope_scripts import scrape_and_insert_daily_horoscopes
 
 app = Flask(__name__)
 
@@ -34,18 +35,11 @@ connect_db(app)
 # Set up cron job to test!
 crontab = Crontab(app)
 
-@crontab.job()
+@crontab.job(minute="0", hour="9")
 def scrape_and_upload_horoscopes():
-    test = User(
-        username="katemoser",
-        first_name="Kate",
-        last_name="Moser"
-    )
-    print("In Crontab! test user=", test)
-    db.session.add(test)
-    db.session.commit()
+    scrape_and_insert_daily_horoscopes()
 
-print("this is my crontab:", crontab)
+# print("this is my crontab:", crontab)
 @app.get('/')
 def homepage():
     """Returns a basic greeting."""

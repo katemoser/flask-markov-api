@@ -1,8 +1,10 @@
+
 from horoscope_scraper import HoroScraper
 from app import db
 from models import HoroscopeSeed
 
 def scrape_and_insert_daily_horoscopes():
+    """ runs a web scraper and adds the scraped horoscopes to db"""
     scraper = HoroScraper()
 
     ## for each sign
