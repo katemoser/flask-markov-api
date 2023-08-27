@@ -1,8 +1,10 @@
+import os
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-import os
+from flask_crontab import Crontab
 
 from models import db, connect_db, User, Seed, Poem, HoroscopeSeed
 from Markov import MarkovMachine
@@ -11,6 +13,8 @@ from poems.routes import poems
 from horoscope_scraper import HoroScraper
 
 app = Flask(__name__)
+
+# allow CORS
 CORS(app)
 
 app.register_blueprint(poems)
@@ -22,12 +26,26 @@ app.config['SQLALCHEMY_ECHO'] = True
 
 # Setup admin page
 admin = Admin(app)
-admin.add_view(ModelView(Poem,db.session))
+admin.add_view(ModelView(Poem, db.session))
 
+# connect database
 connect_db(app)
 
+# Set up cron job to test!
+crontab = Crontab(app)
 
+@crontab.job()
+def scrape_and_upload_horoscopes():
+    test = User(
+        username="katemoser",
+        first_name="Kate",
+        last_name="Moser"
+    )
+    print("In Crontab! test user=", test)
+    db.session.add(test)
+    db.session.commit()
 
+print("this is my crontab:", crontab)
 @app.get('/')
 def homepage():
     """Returns a basic greeting."""
@@ -42,27 +60,27 @@ def list_users():
     returns JSON like: {users: [user, ...] }
     with user like: {
             "first_name": "Kate",
-			"id": 1,
-			"last_name": "Moser",
-			"liked_poems": [poem, ...],
+                        "id": 1,
+                        "last_name": "Moser",
+                        "liked_poems": [poem, ...],
             "submitted_poems": [poem, ...]
             "submitted_seeds": [ seed, ...] }
         with seed like:
         {
             "author": "Kate",
-			"id": 123,
-			"poems_seeded": [ poem, ...],
-			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
-			"title": "New Seed"
+                        "id": 123,
+                        "poems_seeded": [ poem, ...],
+                        "submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+                        "title": "New Seed"
         }
         and poem like: {
             "id": 1,
-			"seed_id": 1,
-			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This is the poem text."
+                        "seed_id": 1,
+                        "submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This is the poem text."
         } """
 
     users = [user.serialize() for user in User.query.all()]
@@ -97,19 +115,19 @@ def list_seeds():
     with seed like:
         {
             "author": "Kate",
-			"id": 123,
-			"poems_seeded": [ poem, ...],
-			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
-			"title": "New Seed"
+                        "id": 123,
+                        "poems_seeded": [ poem, ...],
+                        "submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+                        "title": "New Seed"
         }
     and poem like: {
             "id": 1,
-			"seed_id": 1,
-			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This is the poem text."
+                        "seed_id": 1,
+                        "submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This is the poem text."
         } """
 
     seeds = [seed.serialize() for seed in Seed.query.all()]
@@ -122,12 +140,12 @@ def create_seed():
     """Creates seed. returns JSON like:
         {seed: {
             "author": "Kate",
-			"id": 123,
-			"poems_seeded": [ poem, ...],
-			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
-			"title": "New Seed" }
+                        "id": 123,
+                        "poems_seeded": [ poem, ...],
+                        "submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+                        "title": "New Seed" }
         } """
     data = request.json
     print(data)
@@ -150,12 +168,12 @@ def get_seed(seed_id):
 
     {seed: {
             "author": "Kate",
-			"id": 123,
-			"poems_seeded": [ poem, ...],
-			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
-			"title": "New Seed" } """
+                        "id": 123,
+                        "poems_seeded": [ poem, ...],
+                        "submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+                        "title": "New Seed" } """
 
     seed = Seed.query.get_or_404(seed_id)
 
@@ -221,16 +239,15 @@ def get_poem(poem_id):
     """returns JSON data on one poem like:
     {poem: {
             "id": 1,
-		    "seed_id": 1,
-			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This is the poem text."
+                    "seed_id": 1,
+                        "submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This is the poem text."
         } } """
 
     poem = Poem.query.get_or_404(poem_id)
 
     return jsonify(poem=poem.serialize())
-
 
 
 ###### HOROSCOPE ROUTES ##################################
@@ -253,6 +270,5 @@ def get_daily_horoscope(sign):
     mm = MarkovMachine(input)
 
     generated_horoscope = mm.get_text()
-
 
     return jsonify(sign=sign, text=generated_horoscope)
