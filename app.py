@@ -2,6 +2,8 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+
+from dotenv import load_dotenv
 import os
 
 from models import db, connect_db, User, Seed, Poem, HoroscopeSeed
@@ -9,6 +11,8 @@ from Markov import MarkovMachine
 
 from poems.routes import poems
 from horoscope_scraper import HoroScraper
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
