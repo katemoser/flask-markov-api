@@ -177,6 +177,40 @@ def generate_poem(seed_id):
 
     return text_generator.get_text()
 
+
+################### ENDPOINTS FOR MASHUP #########################
+
+@app.post('/mashups')
+def generate_mashup():
+    """
+    Takes a list of seeds, creates a mashed-up poem.
+
+    Takes JSON body like:
+    {
+        seed_ids: [1, 2]
+    }
+
+    Returns JSON like:
+    {
+        mashup: "This is the generated poem"
+    }
+
+    TODO: ADD IN HINGED/UNHINGED % FUNCTIONALITY
+    """
+
+    data = request.json
+    input_text = ""
+
+    # TODO: find better way of doing this -- join or something
+    for id in data['seed_ids']:
+        seed = Seed.query.get_or_404(id)
+        input_text = f"{input_text} @ {seed.text}"
+
+    text_generator = MarkovMachine(input_text)
+    mashup = text_generator.get_text()
+
+    return jsonify( mashup = mashup )
+
 # COMMENTING OUT FOR NOW WHILE IMPLEMENTING BLUEPRINT
 # @app.get('/poems')
 # def list_poems():
