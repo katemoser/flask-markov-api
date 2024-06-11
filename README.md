@@ -14,3 +14,4 @@ Setup Instructions:
 ```
 DATABASE_URL=<your-database-name>
 SECRET_KEY=<your-secret-key>
+```
