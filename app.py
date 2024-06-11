@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 
 from models import db, connect_db, User, Seed, Poem, HoroscopeSeed
-from Markov import MarkovMachine
+from Markov import MarkovMachine, MegaMarkovMachine
 
 from poems.routes import poems
 from horoscope_scraper import HoroScraper
@@ -199,14 +199,17 @@ def generate_mashup():
     """
 
     data = request.json
-    input_text = ""
+    # commenting out to test new mm
+    # input_text = ""
 
-    # TODO: find better way of doing this -- join or something
-    for id in data['seed_ids']:
-        seed = Seed.query.get_or_404(id)
-        input_text = f"{input_text} @ {seed.text}"
+    # # TODO: find better way of doing this -- join or something
+    # for id in data['seed_ids']:
+    #     seed = Seed.query.get_or_404(id)
+    #     input_text = f"{input_text} @ {seed.text}"
 
-    text_generator = MarkovMachine(input_text)
+    # text_generator = MarkovMachine(input_text)
+    seeds=[Seed.query.get_or_404(id).text for id in data["seed_ids"]]
+    text_generator = MegaMarkovMachine(seeds, {"ratio": [2,8]})
     mashup = text_generator.get_text()
 
     return jsonify( mashup = mashup )

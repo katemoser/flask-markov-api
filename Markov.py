@@ -9,12 +9,14 @@ class MarkovMachine:
     """
 
     def __init__(self, text):
-        lines = text.splitlines()
-        # add newline at end of eol words so we can preserve line breaks
-        text_with_newlines = 'newline '.join(lines)
-        self.words = text_with_newlines.split()
+        # text_with_newlines = self.format_text(text)
+        self.words = self.format_text(text).split()
         self.first_words = []
         self.chains = self.get_chains()
+
+    def format_text(self, text):
+        lines = text.splitlines()
+        return 'newline '.join(lines)
 
     def get_chains(self):
         chains = {}
@@ -40,6 +42,112 @@ class MarkovMachine:
             chains[current_word].append(next_word)
             print(chains)
         return chains
+
+    def get_text(self):
+        """ get a randomly generated text from the stored chains"""
+
+        # let starting word be a random selection from the first words
+        current_word = random.choice(self.first_words)
+        output = []
+        while current_word is not None:
+            output.append(current_word)
+            current_word = random.choice (self.chains[current_word])
+
+        # preserves newlines
+        text = ' '.join(output)
+        lines = text.split("newline")
+        return '\n '.join(lines)
+
+
+################### Experimental configurable mm
+
+class MegaMarkovMachine:
+    """
+    texts is a list of texts: ["text one", "text two"]
+
+    config is a dict like:
+    {
+        ratio: [2,8] => meaning the second text will show up a lot more
+    }
+    """
+
+    def __init__(self, texts, config):
+        self.texts = self.format_texts(texts)
+        self.config = config
+        self.first_words = []
+        self.chains = {}
+
+        self.make_chains()
+        print(self.chains)
+
+    def format_texts(self, texts):
+        formatted_texts = []
+        for text in texts:
+            formatted_texts.append('newline '.join(text.splitlines()))
+        return formatted_texts
+
+    def make_chains(self):
+        """
+        creates chains according to config with multiple texts
+        """
+        for idx, text in enumerate(self.texts):
+            self.add_text_single(text, self.config["ratio"][idx])
+
+    def add_text_single(self, text, amount):
+        """
+        add one text to chains, single link
+        """
+
+        # add first word to firstwords
+        # create markov chains, with None at the end
+        words = text.split()
+        for x in range(amount):
+            self.first_words.append(words[0])
+
+        for idx, current_word in enumerate(words):
+            if idx < len(words) - 1:
+                next_word = words[idx + 1]
+            # if it's the last word, add None to chain
+            else:
+                next_word = None
+
+            if current_word not in self.chains:
+                self.chains[current_word] = []
+            # add word a number of times, to allow for words from one poem to
+            # be used more often
+            for x in range(amount):
+                self.chains[current_word].append(next_word)
+
+    def add_text_to_existing(self, text, amount):
+        """
+        add one text to chains, single link
+        """
+
+        # add first word to firstwords
+        # create markov chains, with None at the end
+        words = text.split()
+        # for x in range(amount):
+        #     self.first_words.append(words[0])
+
+        for idx, current_word in enumerate(words):
+            if idx < len(words) - 1:
+                next_word = words[idx + 1]
+            # if it's the last word, add None to chain
+            else:
+                next_word = None
+
+            if current_word not in self.chains:
+                break
+                # self.chains[current_word] = []
+            # add word a number of times, to allow for words from one poem to
+            # be used more often
+            for x in range(amount):
+                self.chains[current_word].append(next_word)
+
+    def add_text_bigrams(words, amount):
+        """
+        add one text to chains with bigrams
+        """
 
     def get_text(self):
         """ get a randomly generated text from the stored chains"""
