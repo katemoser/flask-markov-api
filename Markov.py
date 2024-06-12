@@ -121,6 +121,8 @@ class MegaMarkovMachine:
     def add_text_to_existing(self, text, amount):
         """
         add one text to chains, single link
+
+        currently not in use
         """
 
         # add first word to firstwords
@@ -148,6 +150,7 @@ class MegaMarkovMachine:
         """
         add one text to chains with bigrams
         """
+        ...
 
     def get_text(self):
         """ get a randomly generated text from the stored chains"""

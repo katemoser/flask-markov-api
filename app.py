@@ -187,7 +187,7 @@ def generate_mashup():
     Takes JSON body like:
     {
         seed_ids: [1, 2]
-        ratio: [1,3]
+        ratio: [2,8]
     }
 
     Returns JSON like:
@@ -199,15 +199,7 @@ def generate_mashup():
     """
 
     data = request.json
-    # commenting out to test new mm
-    # input_text = ""
 
-    # # TODO: find better way of doing this -- join or something
-    # for id in data['seed_ids']:
-    #     seed = Seed.query.get_or_404(id)
-    #     input_text = f"{input_text} @ {seed.text}"
-
-    # text_generator = MarkovMachine(input_text)
     seeds = [Seed.query.get_or_404(id).text for id in data["seed_ids"]]
     ratio = data["ratio"] if "ratio" in data else [1,1]
 
