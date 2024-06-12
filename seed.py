@@ -20,6 +20,9 @@ new_user = User.query.all()[0]
 user_id = new_user.id
 
 # ###################### POEM SEED #################
+
+# commented out because too long!
+#
 # seed = Seed(
 #     title="The Love Song of J. Alfred Prufrock",
 #     text="""Let us go then, you and I,

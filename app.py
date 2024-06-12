@@ -26,10 +26,9 @@ app.config['SQLALCHEMY_ECHO'] = True
 
 # Setup admin page
 admin = Admin(app)
-admin.add_view(ModelView(Poem,db.session))
+admin.add_view(ModelView(Poem, db.session))
 
 connect_db(app)
-
 
 
 @app.get('/')
@@ -46,27 +45,27 @@ def list_users():
     returns JSON like: {users: [user, ...] }
     with user like: {
             "first_name": "Kate",
-			"id": 1,
-			"last_name": "Moser",
-			"liked_poems": [poem, ...],
+                        "id": 1,
+                        "last_name": "Moser",
+                        "liked_poems": [poem, ...],
             "submitted_poems": [poem, ...]
             "submitted_seeds": [ seed, ...] }
         with seed like:
         {
             "author": "Kate",
-			"id": 123,
-			"poems_seeded": [ poem, ...],
-			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
-			"title": "New Seed"
+                        "id": 123,
+                        "poems_seeded": [ poem, ...],
+                        "submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+                        "title": "New Seed"
         }
         and poem like: {
             "id": 1,
-			"seed_id": 1,
-			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This is the poem text."
+                        "seed_id": 1,
+                        "submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This is the poem text."
         } """
 
     users = [user.serialize() for user in User.query.all()]
@@ -101,19 +100,19 @@ def list_seeds():
     with seed like:
         {
             "author": "Kate",
-			"id": 123,
-			"poems_seeded": [ poem, ...],
-			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
-			"title": "New Seed"
+                        "id": 123,
+                        "poems_seeded": [ poem, ...],
+                        "submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+                        "title": "New Seed"
         }
     and poem like: {
             "id": 1,
-			"seed_id": 1,
-			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This is the poem text."
+                        "seed_id": 1,
+                        "submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This is the poem text."
         } """
 
     seeds = [seed.serialize() for seed in Seed.query.all()]
@@ -126,12 +125,12 @@ def create_seed():
     """Creates seed. returns JSON like:
         {seed: {
             "author": "Kate",
-			"id": 123,
-			"poems_seeded": [ poem, ...],
-			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
-			"title": "New Seed" }
+                        "id": 123,
+                        "poems_seeded": [ poem, ...],
+                        "submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+                        "title": "New Seed" }
         } """
     data = request.json
     print(data)
@@ -154,12 +153,12 @@ def get_seed(seed_id):
 
     {seed: {
             "author": "Kate",
-			"id": 123,
-			"poems_seeded": [ poem, ...],
-			"submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
-			"title": "New Seed" } """
+                        "id": 123,
+                        "poems_seeded": [ poem, ...],
+                        "submitted_at": "Sat, 30 Jul 2022 15:45:37 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This seed is the best seed. No one knows what to do with such a wonderful seed as this.",
+                        "title": "New Seed" } """
 
     seed = Seed.query.get_or_404(seed_id)
 
@@ -188,6 +187,7 @@ def generate_mashup():
     Takes JSON body like:
     {
         seed_ids: [1, 2]
+        ratio: [1,3]
     }
 
     Returns JSON like:
@@ -208,11 +208,13 @@ def generate_mashup():
     #     input_text = f"{input_text} @ {seed.text}"
 
     # text_generator = MarkovMachine(input_text)
-    seeds=[Seed.query.get_or_404(id).text for id in data["seed_ids"]]
-    text_generator = MegaMarkovMachine(seeds, {"ratio": [2,8]})
+    seeds = [Seed.query.get_or_404(id).text for id in data["seed_ids"]]
+    ratio = data["ratio"] if "ratio" in data else [1,1]
+
+    text_generator = MegaMarkovMachine(seeds, {"ratio": ratio})
     mashup = text_generator.get_text()
 
-    return jsonify( mashup = mashup )
+    return jsonify(mashup=mashup)
 
 # COMMENTING OUT FOR NOW WHILE IMPLEMENTING BLUEPRINT
 # @app.get('/poems')
@@ -262,16 +264,15 @@ def get_poem(poem_id):
     """returns JSON data on one poem like:
     {poem: {
             "id": 1,
-		    "seed_id": 1,
-			"submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
-			"submitted_by_user_id": 1,
-			"text": "This is the poem text."
+                    "seed_id": 1,
+                        "submitted_at": "Sat, 30 Jul 2022 15:27:00 GMT",
+                        "submitted_by_user_id": 1,
+                        "text": "This is the poem text."
         } } """
 
     poem = Poem.query.get_or_404(poem_id)
 
     return jsonify(poem=poem.serialize())
-
 
 
 ###### HOROSCOPE ROUTES ##################################
@@ -294,6 +295,5 @@ def get_daily_horoscope(sign):
     mm = MarkovMachine(input)
 
     generated_horoscope = mm.get_text()
-
 
     return jsonify(sign=sign, text=generated_horoscope)
