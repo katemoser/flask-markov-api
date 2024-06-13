@@ -207,7 +207,7 @@ class MegaMarkovMachine:
             #check if we are in the last streak (end of words list)
             # if so, empty words
 
-            color_coded_streak = f"<span className='{label}' > {' '.join(streak)} </span>"
+            color_coded_streak = f"<span class='{label}' > {' '.join(streak)} </span>"
 
             return color_coded_streak + " " + _color_code(rest)
 
@@ -216,7 +216,7 @@ class MegaMarkovMachine:
             if word in set1 and word in set2:
                 return "both"
             elif word in set1:
-                return "seed1"
+                return "set1"
             elif word in set2:
                 return "set2"
             else:
