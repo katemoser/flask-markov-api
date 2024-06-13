@@ -206,6 +206,8 @@ def generate_mashup():
     text_generator = MegaMarkovMachine(seeds, {"ratio": ratio})
     mashup = text_generator.get_text()
 
+    # color_coded_mashup = text_generator.color_code_text(mashup, seeds[0], seeds[1])
+
     return jsonify(mashup=mashup)
 
 # COMMENTING OUT FOR NOW WHILE IMPLEMENTING BLUEPRINT

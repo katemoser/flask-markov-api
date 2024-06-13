@@ -51,7 +51,7 @@ class MarkovMachine:
         output = []
         while current_word is not None:
             output.append(current_word)
-            current_word = random.choice (self.chains[current_word])
+            current_word = random.choice(self.chains[current_word])
 
         # preserves newlines
         text = ' '.join(output)
@@ -59,7 +59,7 @@ class MarkovMachine:
         return '\n '.join(lines)
 
 
-################### Experimental configurable mm
+# Experimental configurable mm
 
 class MegaMarkovMachine:
     """
@@ -160,9 +160,82 @@ class MegaMarkovMachine:
         output = []
         while current_word is not None:
             output.append(current_word)
-            current_word = random.choice (self.chains[current_word])
+            current_word = random.choice(self.chains[current_word])
 
         # preserves newlines
         text = ' '.join(output)
+        print("TEXT BEFORE COLOR CODING", text)
+
+        # if we there are seeds, color code it
+        # TODO: We want to change this to a config option!
+        if self.texts:
+            text = self.color_code_text(text)
+
+        print("TEXT after COLOR CODING", text)
         lines = text.split("newline")
-        return '\n '.join(lines)
+        return '\n'.join(lines)
+
+    def color_code_text(self, text):
+        """
+        color codes a text depending on which poems the text appears in
+
+        TODO: update this so that any words that don't appear in the sets
+        are not in span
+        """
+
+        def _color_code(words):
+            # base case -- if no words, return empty string
+            if not words:
+                return ""
+
+            label = _get_label(words[0])
+            streak = []
+
+            # let's get this working and then make it more performant
+            for index, word in enumerate(words):
+                if _get_label(word) == label:
+                    streak.append(word)
+                else:
+                    rest = words[index:]
+                    break
+
+            #This is very cool -- you can give a for loop an else statement
+            # if there is a break statement in the for loop.
+            # the else clause will only execute if we run through the for loop
+            # without encountering the break statement.
+            else:
+                rest = []
+
+            #check if we are in the last streak (end of words list)
+            # if so, empty words
+
+            color_coded_streak = f"<span class='{label}' > {' '.join(streak)} </span>"
+
+            return color_coded_streak + " " + _color_code(rest)
+
+
+        def _get_label(word):
+            if word in set1 and word in set2:
+                return "both"
+            elif word in set1:
+                return "set1"
+            elif word in set2:
+                return "set2"
+            else:
+                return "none"
+
+        set1 = set(self.texts[0].split(" "))
+        set2 = set(self.texts[1].split(" "))
+
+        print("SEED SETS BEFORE COLOR CODING")
+        print("SET 1:", set1)
+        print("SET 2:", set2)
+
+        words = text.split(" ")
+
+        color_coded_text = _color_code(words)
+
+        print("COLOR CODED TEXT: ", color_coded_text)
+
+        return color_coded_text
+
