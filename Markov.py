@@ -165,7 +165,9 @@ class MegaMarkovMachine:
         # preserves newlines
         text = ' '.join(output)
         print("TEXT BEFORE COLOR CODING", text)
-        # if we passed in the seeds, color code it
+
+        # if we there are seeds, color code it
+        # TODO: We want to change this to a config option!
         if self.texts:
             text = self.color_code_text(text)
 
