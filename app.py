@@ -208,7 +208,7 @@ def generate_mashup():
 
     # color_coded_mashup = text_generator.color_code_text(mashup, seeds[0], seeds[1])
 
-    return jsonify(mashup=mashup)
+    return jsonify(mashup=mashup, seeds=seeds)
 
 # COMMENTING OUT FOR NOW WHILE IMPLEMENTING BLUEPRINT
 # @app.get('/poems')
