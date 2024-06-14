@@ -112,7 +112,7 @@ class Seed(db.Model):
             "author": self.author,
             "submitted_by_user_id": self.submitted_by_user_id,
             "submitted_at": self.submitted_at,
-            "poems_seeded": [poem.serialize() for poem in self.poems_seeded]
+            # "poems_seeded": [poem.serialize() for poem in self.poems_seeded]
         }
 
 

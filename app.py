@@ -122,7 +122,15 @@ def list_seeds():
 
 @app.post('/seeds')
 def create_seed():
-    """Creates seed. returns JSON like:
+    """Creates seed.
+
+        Send JSON Body like:
+        {
+            "title": "This is the title of the seed",
+            "text" : "This is the text of the seed",
+            "author": Shakespeare
+        }
+        returns JSON like:
         {seed: {
             "author": "Kate",
                         "id": 123,
@@ -200,15 +208,16 @@ def generate_mashup():
 
     data = request.json
 
-    seeds = [Seed.query.get_or_404(id).text for id in data["seed_ids"]]
+    seeds = [Seed.query.get_or_404(id) for id in data["seed_ids"]]
+    seed_texts = [seed.text for seed in seeds]
     ratio = data["ratio"] if "ratio" in data else [1,1]
 
-    text_generator = MegaMarkovMachine(seeds, {"ratio": ratio})
+    text_generator = MegaMarkovMachine(seed_texts, {"ratio": ratio})
     mashup = text_generator.get_text()
 
     # color_coded_mashup = text_generator.color_code_text(mashup, seeds[0], seeds[1])
 
-    return jsonify(mashup=mashup)
+    return jsonify(mashup=mashup, seeds=[seed.serialize() for seed in seeds])
 
 # COMMENTING OUT FOR NOW WHILE IMPLEMENTING BLUEPRINT
 # @app.get('/poems')
