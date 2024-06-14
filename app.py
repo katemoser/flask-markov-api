@@ -122,7 +122,15 @@ def list_seeds():
 
 @app.post('/seeds')
 def create_seed():
-    """Creates seed. returns JSON like:
+    """Creates seed.
+
+        Send JSON Body like:
+        {
+            "title": "This is the title of the seed",
+            "text" : "This is the text of the seed",
+            "author": Shakespeare
+        }
+        returns JSON like:
         {seed: {
             "author": "Kate",
                         "id": 123,
